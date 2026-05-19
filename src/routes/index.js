@@ -10,10 +10,12 @@ const comun   = require('../controllers/comunicadosController');
 const config  = require('../controllers/configController');
 const admin   = require('../controllers/adminController');
 
-router.post('/auth/login',    auth.login);
-router.post('/auth/registrar',auth.registrar);
-router.get ('/auth/me',       autenticar, auth.me);
-router.post('/auth/admin',    autenticar, exigirPapel('admin_geral'), auth.criarAdmin);
+router.post('/auth/login',            auth.login);
+router.post('/auth/registrar',        auth.registrar);
+router.get ('/auth/me',               autenticar, auth.me);
+router.post('/auth/admin',            autenticar, exigirPapel('admin_geral'), auth.criarAdmin);
+router.post('/auth/esqueci-senha',    auth.forgotPassword);
+router.post('/auth/redefinir-senha',  auth.resetPassword);
 
 router.get ('/igrejas',               autenticar, igrejas.listar);
 router.get ('/igrejas/saldo',         autenticar, exigirPapel('admin_geral'), igrejas.saldoGeral);
@@ -57,5 +59,3 @@ router.get("/configuracoes", autenticar, exigirPapel("admin_geral","admin_congre
 router.post("/configuracoes", autenticar, exigirPapel("admin_geral","admin_congregacao"), config.salvar);
 
 module.exports = router;
-
-// Configurações adicionadas via patch
