@@ -17,7 +17,7 @@ router.post('/auth/admin',            autenticar, exigirPapel('admin_geral'), au
 router.post('/auth/esqueci-senha',    auth.forgotPassword);
 router.post('/auth/redefinir-senha',  auth.resetPassword);
 
-router.get ('/igrejas',               autenticar, igrejas.listar);
+router.get ('/igrejas',               igrejas.listar);
 router.get ('/igrejas/saldo',         autenticar, exigirPapel('admin_geral'), igrejas.saldoGeral);
 router.get ('/igrejas/:id',           autenticar, igrejas.buscar);
 router.post('/igrejas',               autenticar, exigirPapel('admin_geral'), igrejas.criar);
