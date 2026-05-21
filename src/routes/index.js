@@ -43,10 +43,13 @@ router.post  ('/eventos',      autenticar, exigirPapel('admin_geral','admin_cong
 router.put   ('/eventos/:id',  autenticar, exigirPapel('admin_geral','admin_congregacao'), eventos.atualizar);
 router.delete('/eventos/:id',  autenticar, exigirPapel('admin_geral','admin_congregacao'), eventos.deletar);
 
-router.get ('/carteirinhas',  autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.listarCarteirinhas);
-router.post('/carteirinhas',  autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.emitirCarteirinha);
-router.get ('/cartas',        autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.listarCartas);
-router.post('/cartas',        autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.emitirCarta);
+router.get   ('/carteirinhas',        autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.listarCarteirinhas);
+router.post  ('/carteirinhas',        autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.emitirCarteirinha);
+router.put   ('/carteirinhas/:id',    autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.atualizarCarteirinha);
+router.delete('/carteirinhas/:id',    autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.deletarCarteirinha);
+router.get   ('/cartas',              autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.listarCartas);
+router.post  ('/cartas',              autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.emitirCarta);
+router.delete('/cartas/:id',          autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.deletarCarta);
 
 router.get ('/comunicados',   autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.listar);
 router.post('/comunicados',   autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.criar);
@@ -56,7 +59,7 @@ router.get('/admin/dashboard-local', autenticar, exigirPapel('admin_congregacao'
 router.get('/admin/deletados',       autenticar, exigirPapel('admin_geral'), admin.itensDeletados);
 router.get('/admin/logs',            autenticar, exigirPapel('admin_geral'), admin.logs);
 
-router.get("/configuracoes",  autenticar, exigirPapel("admin_geral","admin_congregacao"), config.buscar);
-router.post("/configuracoes", autenticar, exigirPapel("admin_geral","admin_congregacao"), config.salvar);
+router.get ("/configuracoes",  autenticar, exigirPapel("admin_geral","admin_congregacao"), config.buscar);
+router.post("/configuracoes",  autenticar, exigirPapel("admin_geral","admin_congregacao"), config.salvar);
 
 module.exports = router;
