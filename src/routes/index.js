@@ -10,12 +10,13 @@ const comun   = require('../controllers/comunicadosController');
 const config  = require('../controllers/configController');
 const admin   = require('../controllers/adminController');
 
-router.post('/auth/login',            auth.login);
-router.post('/auth/registrar',        auth.registrar);
-router.get ('/auth/me',               autenticar, auth.me);
-router.post('/auth/admin',            autenticar, exigirPapel('admin_geral'), auth.criarAdmin);
-router.post('/auth/esqueci-senha',    auth.forgotPassword);
-router.post('/auth/redefinir-senha',  auth.resetPassword);
+router.post('/auth/login',              auth.login);
+router.post('/auth/registrar',          auth.registrar);
+router.get ('/auth/me',                 autenticar, auth.me);
+router.post('/auth/admin',              autenticar, exigirPapel('admin_geral'), auth.criarAdmin);
+router.post('/auth/esqueci-senha',      auth.forgotPassword);
+router.post('/auth/redefinir-senha',    auth.resetPassword);
+router.post('/auth/completar-perfil',   autenticar, auth.completarPerfil);
 
 router.get ('/igrejas',               igrejas.listar);
 router.get ('/igrejas/saldo',         autenticar, exigirPapel('admin_geral'), igrejas.saldoGeral);
@@ -55,7 +56,7 @@ router.get('/admin/dashboard-local', autenticar, exigirPapel('admin_congregacao'
 router.get('/admin/deletados',       autenticar, exigirPapel('admin_geral'), admin.itensDeletados);
 router.get('/admin/logs',            autenticar, exigirPapel('admin_geral'), admin.logs);
 
-router.get("/configuracoes", autenticar, exigirPapel("admin_geral","admin_congregacao"), config.buscar);
+router.get("/configuracoes",  autenticar, exigirPapel("admin_geral","admin_congregacao"), config.buscar);
 router.post("/configuracoes", autenticar, exigirPapel("admin_geral","admin_congregacao"), config.salvar);
 
 module.exports = router;
