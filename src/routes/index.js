@@ -51,8 +51,9 @@ router.get   ('/cartas',              autenticar, exigirPapel('admin_geral','adm
 router.post  ('/cartas',              autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.emitirCarta);
 router.delete('/cartas/:id',          autenticar, exigirPapel('admin_geral','admin_congregacao'), docs.deletarCarta);
 
-router.get ('/comunicados',   autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.listar);
-router.post('/comunicados',   autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.criar);
+router.get ('/comunicados',     autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.listar);
+router.post('/comunicados',     autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.criar);
+router.put ('/comunicados/:id', autenticar, exigirPapel('admin_geral','admin_congregacao'), comun.atualizar);
 
 router.get('/admin/dashboard',       autenticar, exigirPapel('admin_geral'), admin.dashboardGeral);
 router.get('/admin/dashboard-local', autenticar, exigirPapel('admin_congregacao'), admin.dashboardCongregacao);

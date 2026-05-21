@@ -30,4 +30,23 @@ const criar = async (req, res) => {
   } catch (e) { res.status(500).json({ erro: 'Erro interno' }); }
 };
 
-module.exports = { listar, criar };
+const atualizar = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, mensagem, canal, igreja_id } = req.body;
+    if (!titulo || !mensagem || !canal) return res.status(400).json({ erro: 'Campos obrigatórios faltando' });
+
+    // Verifica se o comunicado existe e pertence à igreja do usuário
+    const iId = req.usuario.papel === 'admin_geral' ? (igreja_id || req.usuario.igreja_id) : req.usuario.igreja_id;
+    const { rows: existe } = await query('SELECT id FROM comunicados WHERE id=$1', [id]);
+    if (existe.length === 0) return res.status(404).json({ erro: 'Comunicado não encontrado' });
+
+    const { rows } = await query(
+      `UPDATE comunicados SET titulo=$1, mensagem=$2, canal=$3, igreja_id=$4 WHERE id=$5 RETURNING *`,
+      [titulo, mensagem, canal, iId, id]
+    );
+    res.json({ dados: rows[0] });
+  } catch (e) { res.status(500).json({ erro: 'Erro interno' }); }
+};
+
+module.exports = { listar, criar, atualizar };
