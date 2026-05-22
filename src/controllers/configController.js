@@ -14,7 +14,6 @@ const buscar = async (req, res) => {
       [igrejaId]
     );
 
-    // Se não existe ainda, retorna defaults
     if (!rows.length) {
       const ig = await query('SELECT * FROM igrejas WHERE id = $1', [igrejaId]);
       return res.json({ dados: ig.rows[0] ? { igreja_id: igrejaId, ...ig.rows[0] } : null });
@@ -29,11 +28,11 @@ const salvar = async (req, res) => {
       ? (req.body.igreja_id || req.usuario.igreja_id)
       : req.usuario.igreja_id;
 
-    const { logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta } = req.body;
+    const { logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta, whatsapp_admin } = req.body;
 
     const { rows } = await query(
-      `INSERT INTO configuracoes (igreja_id, logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      `INSERT INTO configuracoes (igreja_id, logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta, whatsapp_admin)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
        ON CONFLICT (igreja_id) DO UPDATE SET
          logo_base64      = COALESCE(EXCLUDED.logo_base64, configuracoes.logo_base64),
          logo_url         = COALESCE(EXCLUDED.logo_url, configuracoes.logo_url),
@@ -42,13 +41,14 @@ const salvar = async (req, res) => {
          site             = COALESCE(EXCLUDED.site, configuracoes.site),
          texto_carteirinha= COALESCE(EXCLUDED.texto_carteirinha, configuracoes.texto_carteirinha),
          texto_carta      = COALESCE(EXCLUDED.texto_carta, configuracoes.texto_carta),
+         whatsapp_admin   = COALESCE(EXCLUDED.whatsapp_admin, configuracoes.whatsapp_admin),
          atualizado_em    = NOW()
        RETURNING *`,
       [igrejaId, logo_base64 || null, logo_url || null, cor_primaria || '#0f1e3d',
-       nome_pastor || null, site || null, texto_carteirinha || null, texto_carta || null]
+       nome_pastor || null, site || null, texto_carteirinha || null, texto_carta || null,
+       whatsapp_admin || null]
     );
 
-    // Também atualiza dados básicos da igreja
     if (req.body.nome || req.body.telefone || req.body.email || req.body.endereco) {
       await query(
         `UPDATE igrejas SET
