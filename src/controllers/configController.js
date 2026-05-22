@@ -28,25 +28,42 @@ const salvar = async (req, res) => {
       ? (req.body.igreja_id || req.usuario.igreja_id)
       : req.usuario.igreja_id;
 
-    const { logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta, whatsapp_admin } = req.body;
+    const {
+      logo_base64, logo_url, cor_primaria, nome_pastor,
+      site, texto_carteirinha, texto_carta, whatsapp_admin
+    } = req.body;
+
+    // Busca valores atuais para não perder logo se não vier no payload
+    const { rows: atual } = await query('SELECT logo_base64, logo_url FROM configuracoes WHERE igreja_id=$1', [igrejaId]);
+    const logoAtual = atual[0]?.logo_base64 || atual[0]?.logo_url || null;
+    const logoNovo  = logo_base64 || logo_url || null;
 
     const { rows } = await query(
-      `INSERT INTO configuracoes (igreja_id, logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta, whatsapp_admin)
+      `INSERT INTO configuracoes
+         (igreja_id, logo_base64, logo_url, cor_primaria, nome_pastor, site, texto_carteirinha, texto_carta, whatsapp_admin)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
        ON CONFLICT (igreja_id) DO UPDATE SET
-         logo_base64      = COALESCE(EXCLUDED.logo_base64, configuracoes.logo_base64),
-         logo_url         = COALESCE(EXCLUDED.logo_url, configuracoes.logo_url),
-         cor_primaria     = COALESCE(EXCLUDED.cor_primaria, configuracoes.cor_primaria),
-         nome_pastor      = COALESCE(EXCLUDED.nome_pastor, configuracoes.nome_pastor),
-         site             = COALESCE(EXCLUDED.site, configuracoes.site),
-         texto_carteirinha= COALESCE(EXCLUDED.texto_carteirinha, configuracoes.texto_carteirinha),
-         texto_carta      = COALESCE(EXCLUDED.texto_carta, configuracoes.texto_carta),
-         whatsapp_admin   = COALESCE(EXCLUDED.whatsapp_admin, configuracoes.whatsapp_admin),
-         atualizado_em    = NOW()
+         logo_base64       = CASE WHEN $2 IS NOT NULL THEN $2 ELSE configuracoes.logo_base64 END,
+         logo_url          = CASE WHEN $3 IS NOT NULL THEN $3 ELSE configuracoes.logo_url END,
+         cor_primaria      = COALESCE($4, configuracoes.cor_primaria),
+         nome_pastor       = COALESCE($5, configuracoes.nome_pastor),
+         site              = COALESCE($6, configuracoes.site),
+         texto_carteirinha = COALESCE($7, configuracoes.texto_carteirinha),
+         texto_carta       = COALESCE($8, configuracoes.texto_carta),
+         whatsapp_admin    = $9,
+         atualizado_em     = NOW()
        RETURNING *`,
-      [igrejaId, logo_base64 || null, logo_url || null, cor_primaria || '#0f1e3d',
-       nome_pastor || null, site || null, texto_carteirinha || null, texto_carta || null,
-       whatsapp_admin || null]
+      [
+        igrejaId,
+        logoNovo || logoAtual,
+        logo_url || null,
+        cor_primaria || '#0f1e3d',
+        nome_pastor || null,
+        site || null,
+        texto_carteirinha || null,
+        texto_carta || null,
+        whatsapp_admin || null   // <- sem COALESCE, sempre sobrescreve
+      ]
     );
 
     if (req.body.nome || req.body.telefone || req.body.email || req.body.endereco) {
@@ -60,9 +77,12 @@ const salvar = async (req, res) => {
            estado   = COALESCE($6, estado),
            logo_url = COALESCE($7, logo_url)
          WHERE id = $8`,
-        [req.body.nome || null, req.body.telefone || null, req.body.email || null,
-         req.body.endereco || null, req.body.cidade || null, req.body.estado || null,
-         logo_base64 || logo_url || null, igrejaId]
+        [
+          req.body.nome || null, req.body.telefone || null,
+          req.body.email || null, req.body.endereco || null,
+          req.body.cidade || null, req.body.estado || null,
+          logoNovo || null, igrejaId
+        ]
       );
     }
 
