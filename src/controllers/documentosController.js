@@ -39,7 +39,7 @@ const listarCarteirinhas = async (req, res) => {
     const cond = iId ? 'AND m.igreja_id=$1' : '';
     const params = iId ? [iId] : [];
     const { rows } = await query(
-      `SELECT c.*,m.nome_completo,m.foto_url,i.nome AS nome_igreja FROM carteirinhas c JOIN membros m ON m.id=c.membro_id JOIN igrejas i ON i.id=m.igreja_id WHERE 1=1 ${cond} ORDER BY c.criado_em DESC`,
+      `SELECT c.*, m.nome_completo, m.foto_url, m.cpf, m.rg, m.data_batismo, m.funcao_ministerial, i.nome AS nome_igreja FROM carteirinhas c JOIN membros m ON m.id=c.membro_id JOIN igrejas i ON i.id=m.igreja_id WHERE 1=1 ${cond} ORDER BY c.criado_em DESC`,
       params
     );
     res.json({ dados: rows });
