@@ -9,6 +9,7 @@ const docs    = require('../controllers/documentosController');
 const comun   = require('../controllers/comunicadosController');
 const config  = require('../controllers/configController');
 const admin   = require('../controllers/adminController');
+const usuarios = require('../controllers/usuariosController');
 
 router.post('/auth/login',              auth.login);
 router.post('/auth/registrar',          auth.registrar);
@@ -62,5 +63,11 @@ router.get('/admin/logs',            autenticar, exigirPapel('admin_geral'), adm
 
 router.get ("/configuracoes",  autenticar, exigirPapel("admin_geral","admin_congregacao"), config.buscar);
 router.post("/configuracoes",  autenticar, exigirPapel("admin_geral","admin_congregacao"), config.salvar);
+
+router.get   ('/usuarios',          autenticar, exigirPapel('admin_geral','admin_congregacao'), usuarios.listarUsuarios);
+router.get   ('/usuarios/:id',      autenticar, exigirPapel('admin_geral','admin_congregacao'), usuarios.obterUsuario);
+router.put   ('/usuarios/:id',      autenticar, exigirPapel('admin_geral','admin_congregacao'), usuarios.editarUsuario);
+router.patch ('/usuarios/:id/toggle', autenticar, exigirPapel('admin_geral','admin_congregacao'), usuarios.toggleAtivo);
+router.delete('/usuarios/:id',      autenticar, exigirPapel('admin_geral','admin_congregacao'), usuarios.deletarUsuario);
 
 module.exports = router;
